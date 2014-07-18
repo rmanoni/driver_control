@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Created by pcable on 7/17/14.
  *
  */
-public class Sample {
+public class DriverSample {
     private String raw;
     private JSONObject json;
     private JSONArray values;
@@ -19,7 +19,7 @@ public class Sample {
     private String pkt_format_id;
     private int pkt_version;
 
-    public Sample(String s) {
+    public DriverSample(String s) {
         this.raw = s;
         this.json = new JSONObject(s);
         this.stream_name = this.json.getString("stream_name");

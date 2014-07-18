@@ -1,0 +1,12 @@
+mcu:
+  addr: localhost
+  port: 6007
+  cmd_port: 6008
+turbo:
+  addr: localhost
+  port: 6004
+  cmd_port: 6005
+rga:
+  addr: localhost
+  port: 6001
+  cmd_port: 6002
