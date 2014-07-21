@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
 /**
  * Created by pcable on 7/18/14.
@@ -15,8 +16,11 @@ public class EventListener extends Thread {
     private ZMQ.Socket event_socket;
     private static Logger logger = LogManager.getLogger();
     private Thread event_thread;
+    private boolean keepRunning = true;
+    private DriverModel model;
 
-    public EventListener(String host, int port) {
+    public EventListener(String host, int port, DriverModel model) {
+        this.model = model;
         logger.debug("Initialize EventListener");
         context = new ZContext();
         event_socket = context.createSocket(ZMQ.SUB);
@@ -27,21 +31,31 @@ public class EventListener extends Thread {
     }
 
     public void run() {
-        while (true) {
-            logger.trace("in event loop");
-            String data = event_socket.recvStr();
-            if (data == null) break;
-            JSONObject event = new JSONObject(data);
-            double time = event.getDouble("time");
-            String type = event.getString("type");
-            if (MessageTypes.SAMPLE.equals(type)) {
-                DriverSample sample = new DriverSample(event.getString("value"));
-                logger.info(sample);
-            } else {
-                logger.info(event);
+        while (keepRunning) {
+            ZMsg msg = ZMsg.recvMsg(event_socket, ZMQ.NOBLOCK);
+            if (msg == null) {
+                try { Thread.sleep(100); } catch (InterruptedException e1) { }
+                continue;
+            }
+            for (Object aMsg : msg) {
+                String data = aMsg.toString();
+                if (data == null) break;
+                JSONObject event = new JSONObject(data);
+                double time = event.getDouble("time");
+                String type = event.getString("type");
+                if (MessageTypes.SAMPLE.equals(type)) {
+                    DriverSample sample = new DriverSample(event.getString("value"));
+                    logger.info(sample);
+                } else {
+                    logger.info(event);
+                }
             }
         }
         context.close();
+    }
+
+    public void shutdown() {
+        keepRunning = false;
     }
 
     private JSONObject receive(ZMQ.Socket subscriber)

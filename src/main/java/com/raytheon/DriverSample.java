@@ -3,14 +3,16 @@ package com.raytheon;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by pcable on 7/17/14.
  *
  */
 public class DriverSample {
     private String raw;
-    private JSONObject json;
-    private JSONArray values;
+    private Map<String, Object> values;
     private String stream_name;
     private String quality_flag;
     private String preferred_timestamp;
@@ -20,30 +22,32 @@ public class DriverSample {
     private int pkt_version;
 
     public DriverSample(String s) {
-        this.raw = s;
-        this.json = new JSONObject(s);
-        this.stream_name = this.json.getString("stream_name");
-        this.quality_flag = this.json.getString("quality_flag");
-        this.preferred_timestamp = this.json.getString("preferred_timestamp");
-        this.port_timestamp = this.json.getDouble("port_timestamp");
-        this.driver_timestamp = this.json.getDouble("driver_timestamp");
-        this.pkt_format_id = this.json.getString("pkt_format_id");
-        this.pkt_version = this.json.getInt("pkt_version");
-        this.values = this.json.getJSONArray("values");
+        raw = s;
+        JSONObject json = new JSONObject(s);
+        stream_name = json.getString("stream_name");
+        quality_flag = json.getString("quality_flag");
+        preferred_timestamp = json.getString("preferred_timestamp");
+        port_timestamp =  json.getDouble("port_timestamp");
+        driver_timestamp =  json.getDouble("driver_timestamp");
+        pkt_format_id =  json.getString("pkt_format_id");
+        pkt_version =  json.getInt("pkt_version");
+        JSONArray json_values =  json.getJSONArray("values");
+        values = new HashMap<String, Object>();
+
+        for (int i=0; i<json_values.length(); i++) {
+            JSONObject element = (JSONObject) json_values.get(i);
+            values.put(element.getString("value_id"), element.get("value"));
+        }
     }
     public String toString() {
         return this.stream_name + " " + this.values;
-    }
-
-    public JSONObject getJson() {
-        return this.json;
     }
 
     public String getRaw() {
         return raw;
     }
 
-    public JSONArray getValues() {
+    public Map getValues() {
         return values;
     }
 
@@ -70,4 +74,6 @@ public class DriverSample {
     public int getPkt_version() {
         return pkt_version;
     }
+
+    public Object getValue(String key) { return values.get(key); }
 }

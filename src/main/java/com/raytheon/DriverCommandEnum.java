@@ -1,9 +1,6 @@
 package com.raytheon;
 
-/**
- * Created by pcable on 7/18/14.
- */
-public enum DriverCommands {
+public enum DriverCommandEnum {
     PING                    ("driver_ping"),
     INITIALIZE              ("initialize"),
     CONFIGURE               ("configure"),
@@ -20,11 +17,14 @@ public enum DriverCommands {
     SET_RESOURCE            ("set_resource"),
     START_DIRECT            ("start_direct"),
     EXECUTE_DIRECT          ("execute_direct"),
-    STOP_DIRECT             ("stop_direct");
+    STOP_DIRECT             ("stop_direct"),
+    GET_CAPABILITIES        ("get_resource_capabilities"),
+    EXECUTE_RESOURCE        ("execute_resource"),
+    STOP_DRIVER             ("stop_driver_process");
 
     private final String s;
 
-    DriverCommands(String s) {
+    DriverCommandEnum(String s) {
         this.s = s;
     }
 

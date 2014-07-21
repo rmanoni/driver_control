@@ -9,54 +9,88 @@ import org.yaml.snakeyaml.Yaml;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class DriverControl {
     private ZMQ.Socket command_socket;
-    private static Logger logger = LogManager.getLogger();
-    private String portAgentConfigFile = "/Users/pcable/IdeaProjects/driver_control/src/main/resources/port_agent.yaml";
-    private String startupConfigFile = "/Users/pcable/IdeaProjects/driver_control/src/main/resources/startup_config.yaml";
+    private static Logger log = LogManager.getLogger();
+    private String portAgentFile = "/port_agent.yaml";
+    private String startupConfigFile = "/startup_config.yaml";
+    private DriverModel model;
 
-    public DriverControl(String host, int port) {
-        logger.debug("Initialize DriverControl");
+    public DriverControl(String host, int port, DriverModel model) {
+        this.model = model;
+        log.debug("Initialize DriverControl");
         ZContext context = new ZContext();
         command_socket = context.createSocket(ZMQ.REQ);
         command_socket.connect("tcp://" + host + ":" + port);
-        logger.debug("Command socket connected!");
+        log.debug("Command socket connected!");
     }
 
     private String getConfig(String configFile) {
         JSONObject config;
         Map map;
-        try {
-            Yaml yaml = new Yaml();
-            map = (Map) yaml.load(new FileInputStream(configFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Yaml yaml = new Yaml();
+        InputStream configStream = getClass().getResourceAsStream(configFile);
+        map = (Map) yaml.load(configStream);
         config = new JSONObject(map);
         return config.toString();
     }
 
-    private void command_loop() {
-        sendCommand(build_command(DriverCommands.PING, "ping from java"));
-        sendCommand(build_command(DriverCommands.CONFIGURE, getConfig(portAgentConfigFile)));
-        sendCommand(build_command(DriverCommands.SET_INIT_PARAMS, getConfig(startupConfigFile)));
-        sendCommand(build_command(DriverCommands.CONNECT));
-        sendCommand(build_command(DriverCommands.DISCOVER_STATE));
+    protected void ping() {
+        sendCommand(buildCommand(DriverCommandEnum.PING, "ping from java"));
+    }
+
+    protected void configure() {
+        sendCommand(buildCommand(DriverCommandEnum.CONFIGURE, getConfig(portAgentFile)));
+    }
+
+    protected void init() {
+        sendCommand(buildCommand(DriverCommandEnum.SET_INIT_PARAMS, getConfig(startupConfigFile)));
+    }
+
+    protected void connect() {
+        sendCommand(buildCommand(DriverCommandEnum.CONNECT));
+    }
+
+    protected void discover() {
+        sendCommand(buildCommand(DriverCommandEnum.DISCOVER_STATE));
+    }
+
+    protected void stop() {
+        sendCommand(buildCommand(DriverCommandEnum.STOP_DRIVER));
+    }
+
+    protected void getMetadata() {
+        String reply = sendCommand(buildCommand(DriverCommandEnum.GET_CONFIG_METADATA));
+        reply = reply.substring(1,reply.length()-1).replace("\\\"", "\"");
+        model.parseMetadata(new JSONObject(reply));
+    }
+
+    protected void getCapabilities() {
+        String reply = sendCommand(buildCommand(DriverCommandEnum.GET_CAPABILITIES));
+        JSONArray capes = new JSONArray(reply).getJSONArray(0);
+        model.parseCapabilities(capes);
+    }
+
+    protected void execute(String command) {
+        sendCommand(buildCommand(DriverCommandEnum.EXECUTE_RESOURCE, command));
+    }
+
+    protected void getProtocolState() {
+        String state = sendCommand(buildCommand(DriverCommandEnum.GET_RESOURCE_STATE));
+        model.setState(state);
     }
 
     private String sendCommand(JSONObject command) {
         command_socket.send(command.toString());
         String reply = command_socket.recvStr();
-        logger.debug("received reply: " + reply);
+        log.debug("received reply: " + reply);
         return reply;
     }
 
-    private JSONObject build_command(DriverCommands command, String... args) {
+    private JSONObject buildCommand(DriverCommandEnum command, String... args) {
         JSONObject message = new JSONObject();
         JSONObject keyword_args = new JSONObject();
         JSONArray message_args = new JSONArray();
@@ -71,15 +105,7 @@ public class DriverControl {
         message.put("cmd", command);
         message.put("args", message_args);
         message.put("kwargs", keyword_args);
-        logger.debug("BUILT COMMAND: " + message);
+        log.debug("BUILT COMMAND: " + message);
         return message;
-    }
-
-    public static void main(String[] args) {
-        logger.info("Starting DriverControl");
-        DriverControl controller = new DriverControl("localhost", 60812);
-        EventListener listener = new EventListener("localhost", 52857);
-        listener.start();
-        controller.command_loop();
     }
 }

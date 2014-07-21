@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
+    <Properties>
+        <property name="layout">%d{HH:mm:ss.SSS} [%-10t] %-5level %logger{36} - %msg%n</property>
+    </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-10t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="${layout}"/>
         </Console>
+        <TextAppender name="TextAppender">
+            <PatternLayout pattern="${layout}"/>
+        </TextAppender>
     </Appenders>
     <Loggers>
-        <Root level="trace">
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="TextAppender"/>
         </Root>
     </Loggers>
 </Configuration>

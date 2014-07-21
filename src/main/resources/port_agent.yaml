@@ -1,12 +1,12 @@
 mcu:
-  addr: localhost
-  port: 6007
-  cmd_port: 6008
+  addr: rsn-port-agent-test.oceanobservatories.org
+  port: 13026
+  cmd_port: 12026
 turbo:
-  addr: localhost
-  port: 6004
-  cmd_port: 6005
+  addr: rsn-port-agent-test.oceanobservatories.org
+  port: 13027
+  cmd_port: 12027
 rga:
-  addr: localhost
-  port: 6001
-  cmd_port: 6002
+  addr: rsn-port-agent-test.oceanobservatories.org
+  port: 13028
+  cmd_port: 12028
