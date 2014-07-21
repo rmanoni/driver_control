@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+         prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="com.raytheon.ControlWindow" xmlns="http://javafx.com/javafx/8">
+<tabs>
+    <Tab text="Commands">
+        <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                    <TableView id="commandTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                               AnchorPane.topAnchor="0.0">
+                        <columns>
+                            <TableColumn prefWidth="200.0" text="Command" />
+                            <TableColumn minWidth="0.0" prefWidth="500.0" text="Display Name" />
+                        </columns>
+                    </TableView>
+                </children></AnchorPane>
+        </content>
+    </Tab>
+    <Tab text="Parameters">
+        <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                    <TableView id="parameterTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                               AnchorPane.topAnchor="0.0">
+                        <columns>
+                            <TableColumn prefWidth="200.0" text="Parameter" />
+                            <TableColumn prefWidth="500.0" text="Value" />
+                        </columns>
+                    </TableView>
+                </children></AnchorPane>
+        </content>
+    </Tab>
+    <Tab text="Console">
+        <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                    <TextArea id="console" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                              AnchorPane.topAnchor="0.0" />
+                </children>
+            </AnchorPane>
+        </content>
+    </Tab>
+</tabs>
+</TabPane>
