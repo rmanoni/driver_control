@@ -83,6 +83,11 @@ public class DriverControl {
         model.setState(state);
     }
 
+    protected void getResource(String... resources) {
+        String reply = sendCommand(buildCommand(DriverCommandEnum.GET_RESOURCE, resources));
+        model.setParams(new JSONObject(reply));
+    }
+
     private String sendCommand(JSONObject command) {
         command_socket.send(command.toString());
         String reply = command_socket.recvStr();

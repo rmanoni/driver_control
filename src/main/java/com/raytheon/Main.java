@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class Main extends Application {
-    private static Logger logger = LogManager.getLogger();
+    private static Logger log = LogManager.getLogger();
     private EventListener listener;
     private DriverControl controller;
     private DriverModel model;
@@ -27,41 +27,54 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Map params = getParameters().getNamed();
-        int event_port = getPort((String) params.get("event_file"));
-        int command_port = getPort((String) params.get("command_file"));
+        try {
+            Map params = getParameters().getNamed();
+            int event_port = getPort((String) params.get("event_file"));
+            int command_port = getPort((String) params.get("command_file"));
 
-        String driver_host = "localhost";
-        model = new DriverModel();
-        listener = new EventListener(driver_host, event_port, model);
-        controller = new DriverControl(driver_host, command_port, model);
+            String driver_host = "localhost";
+            model = new DriverModel();
+            listener = new EventListener(driver_host, event_port, model);
+            controller = new DriverControl(driver_host, command_port, model);
 
-        listener.start();
-        controller.ping();
-        controller.getProtocolState();
-        if (model.getState().equals("DRIVER_STATE_UNKNOWN")) {
-            controller.configure();
-            controller.init();
-            controller.connect();
-            controller.discover();
+            listener.start();
+            controller.ping();
+            controller.getProtocolState();
+            log.info(model.getState());
+            if (model.getState().equals("DRIVER_STATE_UNCONFIGURED")) {
+                controller.configure();
+                controller.init();
+                controller.connect();
+                controller.discover();
+            }
+            controller.getMetadata();
+            controller.getCapabilities();
+            controller.getResource("DRIVER_PARAMETER_ALL");
+//        if (model.getState().equals("DRIVER_STATE_COMMAND")) {
+//            controller.execute("DRIVER_EVENT_ACQUIRE_SAMPLE");
+//        }
+
+            //Parent root = FXMLLoader.load(getClass().getResource("/ControlWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ControlWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            ControlWindow controlWindow = loader.getController();
+            controlWindow.setModel(model);
+
+            primaryStage.setTitle("DriverControl");
+            primaryStage.setScene(new Scene(root, 800, 600));
+            primaryStage.show();
         }
-        controller.getMetadata();
-        controller.getCapabilities();
-        if (model.getState().equals("DRIVER_STATE_COMMAND")) {
-            controller.execute("DRIVER_EVENT_ACQUIRE_SAMPLE");
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
-        Parent root = FXMLLoader.load(getClass().getResource("/ControlWindow.fxml"));
-        primaryStage.setTitle("DriverControl");
-        primaryStage.setScene(new Scene(root, 800, 600));
-        primaryStage.show();
     }
 
     @Override
     public void stop() {
-        logger.info("Shutting down listener");
+        log.info("Shutting down listener");
         listener.shutdown();
-        logger.info("Shutting down driver");
+        log.info("Shutting down driver");
         //controller.stop();
         try {
             listener.join();

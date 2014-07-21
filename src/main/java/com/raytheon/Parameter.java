@@ -1,6 +1,8 @@
 package com.raytheon;
 
 import javafx.beans.property.SimpleStringProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Parameter {
     private SimpleStringProperty name;
@@ -11,6 +13,7 @@ public class Parameter {
     private SimpleStringProperty value;
     private SimpleStringProperty valueType;
     private SimpleStringProperty units;
+    private static Logger log = LogManager.getLogger();
 
     public Parameter(String name, String displayName, String desc, String vis, String val_desc, String valType, String units) {
         this.name = new SimpleStringProperty(name);
@@ -20,45 +23,55 @@ public class Parameter {
         this.valueDescription = new SimpleStringProperty(val_desc);
         this.units = new SimpleStringProperty(units);
         this.valueType = new SimpleStringProperty(valType);
+        this.value = new SimpleStringProperty();
     }
 
-    public SimpleStringProperty getDisplayName() {
-        return displayName;
+    public String getDisplayName() {
+        return displayName.get();
     }
 
-    public SimpleStringProperty getDescription() {
-        return description;
+    public String getDescription() {
+        return description.get();
     }
 
-    public SimpleStringProperty getVisibility() {
-        return visibility;
+    public String getVisibility() {
+        return visibility.get();
     }
 
-    public SimpleStringProperty getValueDescription() {
-        return valueDescription;
+    public String getValueDescription() {
+        return valueDescription.get();
     }
 
-    public Object getValue() {
-        String _type = valueType.toString();
-        String _value = value.toString();
-        if (_type.equals("int")) return Integer.parseInt(_value);
-        if (_type.equals("float")) return Double.parseDouble(_value);
-        return _value;
+    public String getValue() {
+        return value.get();
+//        if (value == null) return "";
+//        if (value.contains("null"));
+//        if (valueType.equals("int")) return Integer.parseInt(value);
+//        if (valueType.equals("float")) return Double.parseDouble(value);
+//        return value;
     }
 
-    public void setValue(SimpleStringProperty value) {
-        this.value = value;
+    public void setValue(String value) {
+        this.value.set(value);
     }
 
-    public SimpleStringProperty getValueType() {
-        return valueType;
+    public String getValueType() {
+        return valueType.get();
     }
 
-    public SimpleStringProperty getUnits() {
-        return units;
+    public String getUnits() {
+        return units.get();
     }
 
     public String toString() {
         return "name: " + name + " displayName: " + displayName;
+    }
+
+    public SimpleStringProperty valueProperty() {
+        return value;
+    }
+
+    public SimpleStringProperty nameProperty() {
+        return name;
     }
 }

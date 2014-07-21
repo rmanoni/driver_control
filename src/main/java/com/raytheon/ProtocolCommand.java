@@ -1,21 +1,19 @@
 package com.raytheon;
 
-import javafx.beans.property.SimpleStringProperty;
-
 public class ProtocolCommand {
-    private final SimpleStringProperty name;
-    private final SimpleStringProperty displayName;
+    private final String name;
+    private final String displayName;
 
     public ProtocolCommand(String name, String displayName) {
-        this.name = new SimpleStringProperty(name);
-        this.displayName = new SimpleStringProperty(displayName);
+        this.name = name;
+        this.displayName = displayName;
     }
 
-    public SimpleStringProperty getName() {
+    public String getName() {
         return name;
     }
 
-    public SimpleStringProperty getDisplayName() {
+    public String getDisplayName() {
         return displayName;
     }
 

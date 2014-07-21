@@ -9,11 +9,12 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DriverModel {
     private String protocolState;
-    private final ObservableList<ProtocolCommand> commandList = FXCollections.observableArrayList();
-    private final ObservableList<Parameter> paramList = FXCollections.observableArrayList();
+    protected final ObservableList<ProtocolCommand> commandList = FXCollections.observableArrayList();
+    protected final ObservableList<Parameter> paramList = FXCollections.observableArrayList();
     private static Logger log = LogManager.getLogger();
     private Map<String, ProtocolCommand> commands = new HashMap<String, ProtocolCommand>();
     private Map<String, Parameter> parameters = new HashMap<String, Parameter>();
@@ -66,6 +67,7 @@ public class DriverModel {
             Parameter paramObj = new Parameter(name, displayName, description, visibility,
                     valueDescription, valueType, units);
             parameters.put(name, paramObj);
+            paramList.add(paramObj);
         }
         log.debug(commands);
         log.debug(parameters);
@@ -83,6 +85,20 @@ public class DriverModel {
     }
 
     public void setState(String state) {
-        this.state = state;
+        if (state.length() > 1)
+            this.state = state.substring(1,state.length()-1);
+    }
+
+    public void setParams(JSONObject params) {
+        for(Object key: params.keySet()) {
+            String name = (String) key;
+            String value = getString(params, name);
+            Parameter param = parameters.get(name);
+            if(!Objects.equals(param.getValue(), value)) {
+                log.debug("UPDATED PARAM: " + name + " VALUE: " + value);
+                param.setValue(value);
+            }
+
+        }
     }
 }

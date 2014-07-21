@@ -13,12 +13,12 @@
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TableView id="commandTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                    <TableView fx:id="commandTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                AnchorPane.topAnchor="0.0">
                         <columns>
-                            <TableColumn prefWidth="200.0" text="Command" />
-                            <TableColumn minWidth="0.0" prefWidth="500.0" text="Display Name" />
+                            <TableColumn fx:id="commandColumn" prefWidth="200.0" text="Command" />
+                            <TableColumn fx:id="commandNameColumn" minWidth="0.0" prefWidth="500.0" text="Display Name" />
                         </columns>
                     </TableView>
                 </children></AnchorPane>
@@ -28,12 +28,12 @@
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TableView id="parameterTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                    <TableView fx:id="parameterTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                AnchorPane.topAnchor="0.0">
                         <columns>
-                            <TableColumn prefWidth="200.0" text="Parameter" />
-                            <TableColumn prefWidth="500.0" text="Value" />
+                            <TableColumn fx:id="parameterNameColumn" prefWidth="200.0" text="Parameter" />
+                            <TableColumn fx:id="parameterValueColumn" prefWidth="500.0" text="Value" />
                         </columns>
                     </TableView>
                 </children></AnchorPane>
@@ -43,7 +43,7 @@
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TextArea id="console" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
+                    <TextArea fx:id="console" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                               AnchorPane.topAnchor="0.0" />
                 </children>
