@@ -7,9 +7,6 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
-/**
- * Created by pcable on 7/18/14.
- */
 public class EventListener extends Thread {
 
     private ZContext context;
@@ -18,9 +15,11 @@ public class EventListener extends Thread {
     private Thread event_thread;
     private boolean keepRunning = true;
     private DriverModel model;
+    private DriverControl controller;
 
-    public EventListener(String host, int port, DriverModel model) {
+    public EventListener(String host, int port, DriverModel model, DriverControl controller) {
         this.model = model;
+        this.controller = controller;
         log.debug("Initialize EventListener");
         context = new ZContext();
         event_socket = context.createSocket(ZMQ.SUB);
@@ -45,11 +44,15 @@ public class EventListener extends Thread {
                 String type = event.getString("type");
 
                 if (MessageTypes.SAMPLE.equals(type)) {
-                    DriverSample sample = new DriverSample(event.getString("value"));
-                    log.info(sample);
+                    log.info("Received SAMPLE event: " + event);
+                    model.publishSample(new DriverSample(event.getString("value")));
                 } else if (MessageTypes.CONFIG_CHANGE.equals(type)) {
                     log.info("Received CONFIG_CHANGE event: " + event);
                     model.setParams(event.getJSONObject("value"));
+                } else if (MessageTypes.STATE_CHANGE.equals(type)) {
+                    log.info("Received STATE CHANGE event: " + event);
+                    controller.getCapabilities();
+                    model.setState(event.toString());
                 } else {
                     log.info(event);
                 }

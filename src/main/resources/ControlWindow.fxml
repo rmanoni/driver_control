@@ -5,20 +5,16 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-         prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="com.raytheon.ControlWindow" xmlns="http://javafx.com/javafx/8">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.raytheon.ControlWindow">
 <tabs>
     <Tab text="Commands">
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TableView fx:id="commandTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
-                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                               AnchorPane.topAnchor="0.0">
+                    <TableView fx:id="commandTable" layoutX="14.0" layoutY="14.0" onMouseClicked="#selectCommand" prefHeight="367.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <columns>
                             <TableColumn fx:id="commandColumn" prefWidth="200.0" text="Command" />
-                            <TableColumn fx:id="commandNameColumn" minWidth="0.0" prefWidth="500.0" text="Display Name" />
+                            <TableColumn fx:id="commandNameColumn" minWidth="0.0" prefWidth="500.0" text="Description" />
                         </columns>
                     </TableView>
                 </children></AnchorPane>
@@ -28,9 +24,7 @@
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TableView fx:id="parameterTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
-                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                               AnchorPane.topAnchor="0.0">
+                    <TableView fx:id="parameterTable" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <columns>
                             <TableColumn fx:id="parameterNameColumn" prefWidth="200.0" text="Parameter" />
                             <TableColumn fx:id="parameterValueColumn" prefWidth="500.0" text="Value" />
@@ -43,9 +37,7 @@
         <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <children>
-                    <TextArea fx:id="console" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0"
-                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                              AnchorPane.topAnchor="0.0" />
+                    <TextArea fx:id="console" layoutX="14.0" layoutY="14.0" prefHeight="367.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                 </children>
             </AnchorPane>
         </content>

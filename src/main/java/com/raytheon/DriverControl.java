@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 public class DriverControl {
-    private ZMQ.Socket command_socket;
+    private final ZMQ.Socket command_socket;
     private static Logger log = LogManager.getLogger();
     private String portAgentFile = "/port_agent.yaml";
     private String startupConfigFile = "/startup_config.yaml";
@@ -89,10 +89,12 @@ public class DriverControl {
     }
 
     private String sendCommand(JSONObject command) {
-        command_socket.send(command.toString());
-        String reply = command_socket.recvStr();
-        log.debug("received reply: " + reply);
-        return reply;
+        synchronized (command_socket) {
+            command_socket.send(command.toString());
+            String reply = command_socket.recvStr();
+            log.debug("received reply: " + reply);
+            return reply;
+        }
     }
 
     private JSONObject buildCommand(DriverCommandEnum command, String... args) {

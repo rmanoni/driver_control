@@ -1,5 +1,6 @@
 package com.raytheon;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
@@ -12,13 +13,12 @@ import java.util.Map;
 import java.util.Objects;
 
 public class DriverModel {
-    private String protocolState;
     protected final ObservableList<ProtocolCommand> commandList = FXCollections.observableArrayList();
     protected final ObservableList<Parameter> paramList = FXCollections.observableArrayList();
     private static Logger log = LogManager.getLogger();
     private Map<String, ProtocolCommand> commands = new HashMap<String, ProtocolCommand>();
     private Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-    private String state;
+    private SimpleStringProperty state;
 
     public DriverModel() {
         // do something here, probably need some handles
@@ -74,19 +74,33 @@ public class DriverModel {
     }
 
     public void parseCapabilities(JSONArray capes) {
-        commandList.removeAll();
+        log.debug("parse capabilities, clearing commandList");
+        commandList.clear();
         for (int i=0; i<capes.length(); i++) {
-            commandList.add(commands.get(capes.getString(i)));
+            String capability = capes.getString(i);
+            log.debug("Found capability: " + capability);
+            ProtocolCommand command = commands.get(capability);
+            if (command==null) {
+                command = new ProtocolCommand(capability, "");
+                commands.put(capability, command);
+            }
+            log.debug("Adding capability: " + command);
+            commandList.add(command);
         }
     }
 
     public String getState() {
-        return state;
+        return state.get();
     }
 
     public void setState(String state) {
+        log.debug("Received setState: " + state);
         if (state.length() > 1)
-            this.state = state.substring(1,state.length()-1);
+            this.state.set(state.substring(1,state.length()-1));
+    }
+
+    public SimpleStringProperty getStateProperty() {
+        return state;
     }
 
     public void setParams(JSONObject params) {
@@ -100,5 +114,9 @@ public class DriverModel {
             }
 
         }
+    }
+
+    protected void publishSample(DriverSample sample) {
+        //
     }
 }

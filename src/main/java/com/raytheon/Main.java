@@ -34,8 +34,9 @@ public class Main extends Application {
 
             String driver_host = "localhost";
             model = new DriverModel();
-            listener = new EventListener(driver_host, event_port, model);
+
             controller = new DriverControl(driver_host, command_port, model);
+            listener = new EventListener(driver_host, event_port, model, controller);
 
             listener.start();
             controller.ping();
@@ -58,7 +59,7 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ControlWindow.fxml"));
             Parent root = (Parent) loader.load();
             ControlWindow controlWindow = loader.getController();
-            controlWindow.setModel(model);
+            controlWindow.setup(model, controller, listener);
 
             primaryStage.setTitle("DriverControl");
             primaryStage.setScene(new Scene(root, 800, 600));
@@ -75,7 +76,7 @@ public class Main extends Application {
         log.info("Shutting down listener");
         listener.shutdown();
         log.info("Shutting down driver");
-        //controller.stop();
+        controller.stop();
         try {
             listener.join();
         } catch (InterruptedException e) {
