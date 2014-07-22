@@ -57,11 +57,15 @@ public class ControlWindow {
     }
 
     public void selectCommand(MouseEvent event) {
-        log.debug("received event: " + event);
-        TableView source = (TableView) event.getSource();
-        int row = source.getSelectionModel().getSelectedIndex();
-        ProtocolCommand command = model.commandList.get(row);
-        log.debug("maybe I clicked: " + command);
-        controller.execute(command.getName());
+        try {
+            log.debug("received event: " + event);
+            TableView source = (TableView) event.getSource();
+            int row = source.getSelectionModel().getSelectedIndex();
+            ProtocolCommand command = model.commandList.get(row);
+            log.debug("maybe I clicked: " + command);
+            controller.execute(command.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

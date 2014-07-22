@@ -18,7 +18,7 @@ public class DriverModel {
     private static Logger log = LogManager.getLogger();
     private Map<String, ProtocolCommand> commands = new HashMap<String, ProtocolCommand>();
     private Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-    private SimpleStringProperty state;
+    private SimpleStringProperty state = new SimpleStringProperty();
 
     public DriverModel() {
         // do something here, probably need some handles
