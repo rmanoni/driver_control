@@ -11,11 +11,13 @@ public class Parameter {
     private SimpleStringProperty visibility;
     private SimpleStringProperty valueDescription;
     private SimpleStringProperty value;
+    private SimpleStringProperty newValue;
     private SimpleStringProperty valueType;
     private SimpleStringProperty units;
     private static Logger log = LogManager.getLogger();
 
-    public Parameter(String name, String displayName, String desc, String vis, String val_desc, String valType, String units) {
+    public Parameter(String name, String displayName, String desc, String vis,
+                     String val_desc, String valType, String units) {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(displayName);
         this.description = new SimpleStringProperty(desc);
@@ -23,55 +25,39 @@ public class Parameter {
         this.valueDescription = new SimpleStringProperty(val_desc);
         this.units = new SimpleStringProperty(units);
         this.valueType = new SimpleStringProperty(valType);
-        this.value = new SimpleStringProperty();
+        this.value = new SimpleStringProperty("");
+        this.newValue = new SimpleStringProperty("");
     }
 
-    public String getDisplayName() {
-        return displayName.get();
-    }
+    public String getName() { return name.get(); }
 
-    public String getDescription() {
-        return description.get();
-    }
+    public String getDisplayName() { return displayName.get(); }
 
-    public String getVisibility() {
-        return visibility.get();
-    }
+    public String getDescription() { return description.get(); }
 
-    public String getValueDescription() {
-        return valueDescription.get();
-    }
+    public String getVisibility() { return visibility.get(); }
 
-    public String getValue() {
-        return value.get();
-//        if (value == null) return "";
-//        if (value.contains("null"));
-//        if (valueType.equals("int")) return Integer.parseInt(value);
-//        if (valueType.equals("float")) return Double.parseDouble(value);
-//        return value;
-    }
+    public String getValueDescription() { return valueDescription.get(); }
 
-    public void setValue(String value) {
-        this.value.set(value);
-    }
+    public String getValue() { return value.get(); }
 
-    public String getValueType() {
-        return valueType.get();
-    }
+    public void setValue(String value) { this.value.set(value); }
 
-    public String getUnits() {
-        return units.get();
-    }
+    public String getValueType() { return valueType.get(); }
+
+    public void setNewValue(String value) { this.newValue.set(value); }
+
+    public String getNewValue() { return newValue.get(); }
+
+    public String getUnits() { return units.get(); }
 
     public String toString() {
         return "name: " + name + " displayName: " + displayName;
     }
 
-    public SimpleStringProperty valueProperty() {
-        return value;
-    }
+    public SimpleStringProperty valueProperty() { return value; }
 
-    public SimpleStringProperty nameProperty() {
-        return name;
-    }
+    public SimpleStringProperty nameProperty() { return name; }
+
+    public SimpleStringProperty newValueProperty() { return newValue; }
 }

@@ -1,5 +1,6 @@
 package com.raytheon;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,10 +16,12 @@ import java.util.Objects;
 public class DriverModel {
     protected final ObservableList<ProtocolCommand> commandList = FXCollections.observableArrayList();
     protected final ObservableList<Parameter> paramList = FXCollections.observableArrayList();
+    protected final ObservableList<DriverSample> sampleList = FXCollections.observableArrayList();
     private static Logger log = LogManager.getLogger();
     private Map<String, ProtocolCommand> commands = new HashMap<String, ProtocolCommand>();
-    private Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+    protected Map<String, Parameter> parameters = new HashMap<String, Parameter>();
     private SimpleStringProperty state = new SimpleStringProperty();
+    private SimpleBooleanProperty paramsSettable = new SimpleBooleanProperty();
 
     public DriverModel() {
         // do something here, probably need some handles
@@ -76,6 +79,7 @@ public class DriverModel {
     public void parseCapabilities(JSONArray capes) {
         log.debug("parse capabilities, clearing commandList");
         commandList.clear();
+        setParamsSettable(false);
         for (int i=0; i<capes.length(); i++) {
             String capability = capes.getString(i);
             log.debug("Found capability: " + capability);
@@ -83,6 +87,11 @@ public class DriverModel {
             if (command==null) {
                 command = new ProtocolCommand(capability, "");
                 commands.put(capability, command);
+            }
+            if (command.getName().equals("DRIVER_EVENT_GET")) continue;
+            if (command.getName().equals("DRIVER_EVENT_SET")) {
+                setParamsSettable(true);
+                continue;
             }
             log.debug("Adding capability: " + command);
             commandList.add(command);
@@ -95,8 +104,7 @@ public class DriverModel {
 
     public void setState(String state) {
         log.debug("Received setState: " + state);
-        if (state.length() > 1)
-            this.state.set(state.substring(1,state.length()-1));
+        this.state.set(state);
     }
 
     public SimpleStringProperty getStateProperty() {
@@ -117,6 +125,18 @@ public class DriverModel {
     }
 
     protected void publishSample(DriverSample sample) {
-        //
+        sampleList.add(sample);
+    }
+
+    public boolean getParamsSettable() {
+        return paramsSettable.get();
+    }
+
+    public void setParamsSettable(boolean paramsSettable) {
+        this.paramsSettable.set(paramsSettable);
+    }
+
+    public SimpleBooleanProperty getParamsSettableProperty() {
+        return paramsSettable;
     }
 }

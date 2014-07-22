@@ -16,6 +16,7 @@ public class EventListener extends Thread {
     private boolean keepRunning = true;
     private DriverModel model;
     private DriverControl controller;
+    private static final String VALUE = "value";
 
     public EventListener(String host, int port, DriverModel model, DriverControl controller) {
         this.model = model;
@@ -44,15 +45,15 @@ public class EventListener extends Thread {
                 String type = event.getString("type");
 
                 if (MessageTypes.SAMPLE.equals(type)) {
-                    log.info("Received SAMPLE event: " + event);
-                    model.publishSample(new DriverSample(event.getString("value")));
+                    log.info("Received SAMPLE event");
+                    model.publishSample(new DriverSample(event.getString(VALUE)));
                 } else if (MessageTypes.CONFIG_CHANGE.equals(type)) {
-                    log.info("Received CONFIG_CHANGE event: " + event);
-                    model.setParams(event.getJSONObject("value"));
+                    log.info("Received CONFIG_CHANGE");
+                    model.setParams(event.getJSONObject(VALUE));
                 } else if (MessageTypes.STATE_CHANGE.equals(type)) {
-                    log.info("Received STATE CHANGE event: " + event);
+                    log.info("Received STATE CHANGE");
                     controller.getCapabilities();
-                    model.setState(event.toString());
+                    model.setState(event.getString(VALUE));
                 } else {
                     log.info(event);
                 }

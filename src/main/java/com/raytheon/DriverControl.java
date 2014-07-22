@@ -64,7 +64,7 @@ public class DriverControl {
 
     protected void getMetadata() {
         String reply = sendCommand(buildCommand(DriverCommandEnum.GET_CONFIG_METADATA));
-        reply = reply.substring(1,reply.length()-1).replace("\\\"", "\"");
+        reply = reply.replace("\\\"", "\"");
         model.parseMetadata(new JSONObject(reply));
     }
 
@@ -85,7 +85,13 @@ public class DriverControl {
 
     protected void getResource(String... resources) {
         String reply = sendCommand(buildCommand(DriverCommandEnum.GET_RESOURCE, resources));
-        model.setParams(new JSONObject(reply));
+        if (reply != null) {
+            model.setParams(new JSONObject(reply));
+        }
+    }
+
+    protected void setResource(String parameters) {
+        sendCommand(buildCommand(DriverCommandEnum.SET_RESOURCE, parameters));
     }
 
     private String sendCommand(JSONObject command) {
@@ -93,6 +99,16 @@ public class DriverControl {
             command_socket.send(command.toString());
             String reply = command_socket.recvStr();
             log.debug("received reply: " + reply);
+            if (reply.startsWith("[")) {
+                JSONArray possibleException = new JSONArray(reply);
+                if (possibleException.length() == 3) {
+                    log.error("EXCEPTION FROM DRIVER: " + possibleException);
+                    return null;
+                }
+            }
+            if (reply.startsWith("\"")) {
+                reply = reply.substring(1,reply.length()-1);
+            }
             return reply;
         }
     }

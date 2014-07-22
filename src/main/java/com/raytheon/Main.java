@@ -28,16 +28,29 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
+            // create window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ControlWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            primaryStage.setTitle("DriverControl");
+            primaryStage.setScene(new Scene(root, 800, 600));
+            primaryStage.show();
+
+            // get config
             Map params = getParameters().getNamed();
             int event_port = getPort((String) params.get("event_file"));
             int command_port = getPort((String) params.get("command_file"));
-
             String driver_host = "localhost";
-            model = new DriverModel();
 
+            // create model and controllers
+            model = new DriverModel();
             controller = new DriverControl(driver_host, command_port, model);
             listener = new EventListener(driver_host, event_port, model, controller);
 
+            // register the model and controllers with the view
+            ControlWindow controlWindow = loader.getController();
+            controlWindow.setup(model, controller, listener);
+
+            // initialize the driver
             listener.start();
             controller.ping();
             controller.getProtocolState();
@@ -51,19 +64,7 @@ public class Main extends Application {
             controller.getMetadata();
             controller.getCapabilities();
             controller.getResource("DRIVER_PARAMETER_ALL");
-//        if (model.getState().equals("DRIVER_STATE_COMMAND")) {
-//            controller.execute("DRIVER_EVENT_ACQUIRE_SAMPLE");
-//        }
 
-            //Parent root = FXMLLoader.load(getClass().getResource("/ControlWindow.fxml"));
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ControlWindow.fxml"));
-            Parent root = (Parent) loader.load();
-            ControlWindow controlWindow = loader.getController();
-            controlWindow.setup(model, controller, listener);
-
-            primaryStage.setTitle("DriverControl");
-            primaryStage.setScene(new Scene(root, 800, 600));
-            primaryStage.show();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +77,7 @@ public class Main extends Application {
         log.info("Shutting down listener");
         listener.shutdown();
         log.info("Shutting down driver");
-        controller.stop();
+        //controller.stop();
         try {
             listener.join();
         } catch (InterruptedException e) {
