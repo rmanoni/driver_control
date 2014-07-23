@@ -9,14 +9,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class DriverModel {
     protected final ObservableList<ProtocolCommand> commandList = FXCollections.observableArrayList();
     protected final ObservableList<Parameter> paramList = FXCollections.observableArrayList();
-    protected final ObservableList<DriverSample> sampleList = FXCollections.observableArrayList();
+    protected final ObservableList<String> sampleTypes = FXCollections.observableArrayList();
+    protected Map<String, ObservableList<Map<String, Object>>> sampleLists = new HashMap<String, ObservableList<Map<String, Object>>>();
     private static Logger log = LogManager.getLogger();
     private Map<String, ProtocolCommand> commands = new HashMap<String, ProtocolCommand>();
     protected Map<String, Parameter> parameters = new HashMap<String, Parameter>();
@@ -124,8 +123,19 @@ public class DriverModel {
         }
     }
 
-    protected void publishSample(DriverSample sample) {
-        sampleList.add(sample);
+    protected void publishSample(Map<String, Object> sample) {
+        String streamName = (String) sample.get(DriverSampleFactory.STREAM_NAME);
+
+        if (!sampleLists.containsKey(streamName)) {
+            sampleLists.put(streamName, FXCollections.observableArrayList(new ArrayList<Map<String, Object>>()));
+            sampleTypes.add(streamName);
+        }
+        try {
+            List<Map<String, Object>> samples = sampleLists.get(streamName);
+            if (samples != null) samples.add(sample);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean getParamsSettable() {

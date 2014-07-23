@@ -7,6 +7,8 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import java.util.Map;
+
 public class EventListener extends Thread {
 
     private ZContext context;
@@ -28,6 +30,7 @@ public class EventListener extends Thread {
         event_socket.connect("tcp://" + host + ":" + port);
         event_socket.subscribe(new byte[0]);
         log.debug("Event socket connected!");
+        this.setName("event listener thread");
     }
 
     public void run() {
@@ -45,8 +48,9 @@ public class EventListener extends Thread {
                 String type = event.getString("type");
 
                 if (MessageTypes.SAMPLE.equals(type)) {
-                    log.info("Received SAMPLE event");
-                    model.publishSample(new DriverSample(event.getString(VALUE)));
+                    Map<String, Object> sample = DriverSampleFactory.parseSample(event.getString(VALUE));
+                    log.info("Received SAMPLE event: " + sample);
+                    model.publishSample(sample);
                 } else if (MessageTypes.CONFIG_CHANGE.equals(type)) {
                     log.info("Received CONFIG_CHANGE");
                     model.setParams(event.getJSONObject(VALUE));
