@@ -1,19 +1,20 @@
 package com.raytheon;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ControlWindow {
     @FXML
@@ -38,6 +39,8 @@ public class ControlWindow {
     private TextField statusField;
     @FXML
     private Button sendParamButton;
+    @FXML
+    private TabPane tabPane;
 
 
     private DriverModel model;
@@ -61,14 +64,39 @@ public class ControlWindow {
         }
     };
 
-    private ListChangeListener<DriverSample> sampleChangeListener = new ListChangeListener<DriverSample>() {
+    private ListChangeListener<String> sampleChangeListener = new ListChangeListener<String>() {
         @Override
-        public void onChanged(Change<? extends DriverSample> change) {
-            while (change.next()) {
-                for (DriverSample sample : change.getAddedSubList()) {
-                    console.appendText(sample.toString() + "\n\n");
+        public void onChanged(final Change<? extends String> change) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    while (change.next()) {
+                        for (String sample : change.getAddedSubList()) {
+                            log.debug("added sample type: " + sample);
+                            // new sample type detected
+                            // create a new tab
+                            Tab tab = new Tab(sample);
+                            tabPane.getTabs().add(tab);
+
+                            // create a tableview, add it to the tab
+                            TableView<Map<String, Object>> tableView = new TableView<Map<String, Object>>(model.sampleLists.get(sample));
+                            tab.setContent(tableView);
+
+                            // grab a sample, use it to find the columns and populate
+                            // the tableview...
+                            Map<String, Object> oneSample = model.sampleLists.get(sample).get(0);
+                            List<String> keys = new ArrayList<String>(oneSample.keySet());
+                            Collections.sort(keys);
+                            for (String key: keys) {
+                                TableColumn<Map<String, Object>, String> column = new TableColumn<Map<String, Object>, String>(key);
+                                column.setCellValueFactory(new MapValueFactory(key));
+                                column.setPrefWidth(50.0);
+                                tableView.getColumns().add(column);
+                            }
+                        }
+                    }
                 }
-            }
+            });
         }
     };
 
@@ -101,7 +129,7 @@ public class ControlWindow {
         parameterTable.setItems(model.paramList);
         this.model.getStateProperty().addListener(stateListener);
         this.model.getParamsSettableProperty().addListener(settableListener);
-        this.model.sampleList.addListener(sampleChangeListener);
+        this.model.sampleTypes.addListener(sampleChangeListener);
     }
 
     public void selectCommand(MouseEvent event) {
